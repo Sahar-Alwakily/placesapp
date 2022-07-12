@@ -4,6 +4,7 @@ import { Text, View,SafeAreaView, Dimensions, Image,Button
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import Carousel from 'react-native-snap-carousel';
 
+const axios = require('axios').default;
 
 export const SLIDER_WIDTH = Dimensions.get('window').width + 30;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
@@ -15,14 +16,14 @@ const Home = ({ navigation }) => {
   let SelectAllLocation = [];
   const [isDone, setIsDone] = useState(false);
 
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const[inxData,setinxData] = useState(0);
   const[LoDa,setloDa] = useState([]);
   const [selectData, setSelectData] = useState(null);
 
 
-  const MapArrLocations = () =>{
+  const MapArrLocations = (data) =>{
     let arr = data.map((item )=>{
       item.isSelected = false;
       return {...item}
@@ -37,8 +38,8 @@ const Home = ({ navigation }) => {
       SelectAllLocation[i] = selectData[arr1[i]];
     }
     console.log(SelectAllLocation.length);
-
-    navigation.navigate('ChooseLocation', {paramKey: SelectAllLocation});
+    //AllDataPlace.push(selectData);
+    navigation.navigate('ChooseLocation', {paramKey: SelectAllLocation,DataKey:selectData});
   };
  
  function removeItemOnce(arr, value) {
@@ -54,20 +55,19 @@ const Home = ({ navigation }) => {
 
 
     if(!(selectData[index].isSelected)) {
-      if(arr1.length <=3) {
+      if(arr1.length <4) {
         arr1.push(index);
         setIsDone(false);
+        selectData[index].isSelected=true;
       }
-      else setIsDone(true);
-      selectData[index].isSelected=true;
-    }
-
+     }  
     else {
       selectData[index].isSelected=false;
       removeItemOnce(arr1,index);
     }
-    console.log('ADD select '+ selectData[index].isSelected);
-    console.log('ADD   '+ index);
+    if(arr1.length > 1){setIsDone(true);}
+    console.log('ADdD select '+ selectData[index].isSelected);
+    console.log('ADD ff    '+ index);
     console.log(arr1 + " length : "+ arr1.length);
 }
 
@@ -119,24 +119,23 @@ const Home = ({ navigation }) => {
   useEffect(async () => {
     const respon = await fetch("https://www.triposo.com/api/20220104/poi.json?location_id=Eilat&fields=all&count=10&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco",{
       method: "GET",
-      method: 'GET',
       headers: new Headers({
         'Content-Type': 'application/json; charset=UTF-8',
         'Accept': 'application/json; charset=UTF-8'
       })
-    })
-      .then(res => {
+    }).then(res => {
         console.log('res status', res.status);
         console.log('res ok', res.ok);
         return res.json();
-      })
-      .then(
-        (result) => { setData(result.results); MapArrLocations();setLoading(false);},
-        (error) => {
-          return null;
-        }
-      )
-  },[]);
+      }).then(
+        (result) => { setData(result.results); MapArrLocations(result.results);setLoading(false);},
+        (error) => {return null;})
+    }, [10]);
+ // useEffect( () => {
+ //   fetchData();
+ // }, [data]);
+  console.log(" nm hjj " + data)
+
   return (
     loading === false ? <ScrollView>
       <View >
@@ -149,8 +148,6 @@ const Home = ({ navigation }) => {
           itemWidth={ITEM_WIDTH}
         />   
         </SafeAreaView>
-
-
       </View>
 
       <Text style={{ marginVertical: 5, fontSize: 15, fontWeight: 'bold' }}> u can select A Location 2-4 and u chouse ({arr1.length})  </Text>
@@ -162,7 +159,8 @@ const Home = ({ navigation }) => {
     </ScrollView> : <Image source={require('../Images/img.gif')}/>
 
   );
-}
+};
+export default Home;
 
 const styles = StyleSheet.create({
   containerFlex: {
@@ -247,4 +245,3 @@ const styles = StyleSheet.create({
       left: 9,
   }
 });
-export default Home;

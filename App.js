@@ -12,8 +12,6 @@ import ChooseLocation from './Screens/ChooseLocation';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import Camera from './Screens/Camera';
 import AddLocation from './Screens/AddLocation';
-import { Provider as ReduxProvider } from "react-redux";
-import { store } from "./store";
 import Track from './Screens/Track';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -21,7 +19,6 @@ const Tab = createBottomTabNavigator();
 function TabBar() {
 
   return ( 
-  <ReduxProvider store={store}>
   <Tab.Navigator>
     <Tab.Screen name='Places' component={Home}
       options={{
@@ -69,7 +66,6 @@ function TabBar() {
     />
 
   </Tab.Navigator>
-  </ReduxProvider>
   )
 }
 
@@ -77,7 +73,6 @@ function TabBar() {
 export default function App() {
 
   return (
-    <ReduxProvider store={store}>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="LogIn" component={LogIn} options={{headerShown:false}} ></Stack.Screen>
@@ -95,7 +90,6 @@ export default function App() {
 
       </Stack.Navigator>
     </NavigationContainer>
-    </ReduxProvider>
 
   );
 

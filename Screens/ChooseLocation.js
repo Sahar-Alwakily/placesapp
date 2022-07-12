@@ -1,16 +1,15 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { Component, useState } from 'react';
+import React, {  useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DatePicker from 'react-native-datepicker';
-
-import { View, Text, StyleSheet,TouchableOpacity,TextInput ,Picker,Button} from 'react-native';
-import { ScrollView} from 'react-native-virtualized-view';
-import AddressPickup from '../components/AddressPickup';
-import CustomBtn from '../components/CustomBtn';
-import showError from '../helper/helperFunction'
+import {ImageBackground, View, Text, StyleSheet,TouchableOpacity,TextInput ,Picker,Button} from 'react-native';
+import { LocationData } from '../data/allLocations'
+import { Icon } from 'react-native-elements'
+import image from '../Images/pgk.png';
 
 
 const ChooseLocation = ({ route ,navigation}) => {
+  let Newlocations = []
+
 const [selectedValue, setSelectedValue] = useState("");
 
     const onAdd = () => {
@@ -32,28 +31,37 @@ const [selectedValue, setSelectedValue] = useState("");
         item.NameTrack= NameTrack;
         item.selectData = selectData;
 
-      alert("nice !");
-      console.log(item); 
-      navigation.navigate('Home', {paramKey: item});//new arr 
+        
+        alert("nice !");
+        LocationData.push(item);
+        console.log(item); 
+        navigation.navigate('Home');//new arr 
 
     }
 
     const [Time, setTime] = useState(new Date());
     let locations = route.params.paramKey;
-    const [OneHour, setOneHour]  = useState('00:00');
+    ArryFromMinToMax(locations);
+
+
+    //const Newloca= ArryFromMinToMax(Newlocations,locations) ;
+    const [OneHour, setOneHour]  = useState('n1');
     const [OneLocation, setOneLocation] = useState();
     const [twoLocation, setTwoLocation] = useState('');
-    const [twoHour, settwoHour] = useState('00:00');
+    const [twoHour, settwoHour] = useState('n2');
     const [threeLocation, setThreeLocation] = useState('');
-    const [threeHour, setthreeHour] = useState('00:00');
+    const [threeHour, setthreeHour] = useState('n3');
     const [fourLocation, setFourLocation] = useState('');
-    const [fourHour, setfourHour] = useState('00:00');
+    const [fourHour, setfourHour] = useState('n4');
     const [date, setData] = useState(new Date());
     const [selectData, setselectData] = useState(new Date());
+    const [icon1, setIcon1] = useState('warning');
+    const [icon2, setIcon2] = useState('warning');
+    const [icon3, setIcon3] = useState('warning');
+    const [icon4, setIcon4] = useState('warning');
 
+    
     const [NameTrack, onChangeNameTrack] = React.useState("Name Track");
-
-
     const [isTimePickerVisibleFour, setisTimePickerVisibleFour] = useState(false);
     const [isTimePickerVisibleOne, setisTimePickerVisibleOne] = useState(false);
     const [isTimePickerVisibleTwo, setisTimePickerVisibleTwo] = useState(false);
@@ -61,6 +69,11 @@ const [selectedValue, setSelectedValue] = useState("");
 
 
     const[isDatePickerVisible,setisDatePickerVisible]= useState(false);
+
+    const [HL1, setHL1] = useState();
+    const [HL2, setHL2] = useState();
+    const [HL3, setHL3] = useState();
+    const [HL4, setHL4] = useState();
 
 
     const showTimePickerFour = () => {setisTimePickerVisibleFour(true);};
@@ -75,38 +88,165 @@ const [selectedValue, setSelectedValue] = useState("");
     const hideTimePickerThree = () => {setisTimePickerVisibleThree(false);};
     const hideDatePicker= () => {setisDatePickerVisible(false);};
 
+    const [IdUser,setId] = useState('');
+
+    const CheckHours = (H1,H2) => {
+      console.log('Check Hours ' + H1 + ' ' + H2);
+      if(H1 == H2 ) { return true;} else {return false;}    
+    }
+
+    const CheckHoursAfter = (l1,l2) => {
+      console.log('Check Hours after ' + l1 + ' ' + l2);
+
+      if(l1 >= l2 ) { return true;} else {return false;}  
+    }
+    const submitFun = () => {
+      fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Users?id=' + IdUser , {
+        method: 'Get',
+        headers: new Headers({
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json; charset=UTF-8'
+        })
+      })
+        .then(res => {
+          console.log('res=', res);
+          console.log('res.status', res.status);
+          return res.json()
+        })
+        .then(
+          (error) => {
+            console.log("err post=", error);
+          }
+        );
+    }
 
 
 
-    const onChangeFour = ( event, selectedDate) =>{
+    const AddUser = () => {
+
+        let arr = data.map((item )=>{
+          item.idUser = false;//name user ! 
+          return {...item}
+        });
+    
+      console.log(locations);
+      fetch('http://194.90.158.74/bgroup61/test2/tar5/api/locations', {
+        method: 'Post',
+        body: JSON.stringify(locations),
+        headers: new Headers({
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json; charset=UTF-8'
+        })
+      })
+        .then(res => {
+          console.log('Adding Locations', res);
+          return res.json()
+        })
+        .then(
+          (error) => {
+            console.log("err post=", error);
+          }
+        );
+    }
+
+
+  const onChangeFour = ( event, selectedDate) =>{
       hideTimePickerFour();
       const currentDate =selectedDate || data;
       let tempDate = new Date(currentDate);
       let hourf =`${(tempDate.getHours())}`+ ':'+ `${(tempDate.getMinutes())}`;
+      setHL4(tempDate.getHours());
       setfourHour(hourf);
       console.log(hourf);
+      if(CheckHoursAfter(HL3,tempDate.getHours())){alert('Please select another houres');setfourHour("0000");}       
+      if(CheckHours(twoHour,hourf)){
+        alert('Please select another houres');
+        setfourHour("0000");
+      }else if(CheckHours(OneHour,hourf)) {
+       alert('Please select another houres');
+       setfourHour("0000");
+      }else if(CheckHours(threeHour,hourf)) {
+      alert('Please select another houres');
+      setfourHour("0000");
+     }else if((checkOpenTravel(Newlocations[2],Newlocations[3],tempDate.getHours())))alert('Please select another houres its closed !');
+     else setIcon4('done');
+
   }
   
 
   const onChangOne = (event, selectedDate) =>{
+    console.log("Location Lat : "+locations[0].coordinates.latitude);
     hideTimePickerOne();
     const currentDate =selectedDate || data;
     let tempDate = new Date(currentDate);
+    setHL1(tempDate.getHours());
     let hourOne =`${(tempDate.getHours())}`+ ':'+ `${(tempDate.getMinutes())}`;
     setOneHour(hourOne);
     console.log(hourOne);
+    setIcon1('done');
+    setOneLocation(Newlocations[0].name);
+    setTwoLocation(Newlocations[1].name);
+    setThreeLocation(Newlocations[2].name);
+    setFourLocation(Newlocations[3].name);
   }
   
+function ArryFromMinToMax (Loca){
+  const Newl = [];
+  const numbers = [];
+  let minL1 = getClucHoures(
+    Loca[0].coordinates.latitude,
+    Loca[1].coordinates.latitude,
+    Loca[0].coordinates.longitude,
+    Loca[1].coordinates.longitude
+    );
+    let minL2 = getClucHoures(
+      Loca[0].coordinates.latitude,
+      Loca[2].coordinates.latitude,
+      Loca[0].coordinates.longitude,
+      Loca[2].coordinates.longitude
+    );
+    let minL3 = getClucHoures(
+      Loca[0].coordinates.latitude,
+      Loca[3].coordinates.latitude,
+      Loca[0].coordinates.longitude,
+      Loca[3].coordinates.longitude
+    );
+    numbers.push(minL1);numbers.push(minL2);numbers.push(minL3);
+
+    let lowestToHighest = numbers.sort((a, b) => a - b);
+
+    console.log(lowestToHighest)
+
+    Newl.push(Loca[0]);
+    for(let i =0;i<lowestToHighest.length;i++) {
+      if(lowestToHighest[i]==minL1)Newl.push(Loca[1])
+      if(lowestToHighest[i]==minL2)Newl.push(Loca[2])
+      if(lowestToHighest[i]==minL3)Newl.push(Loca[3])
+    }
+
+  console.log(" "+ minL1 +  " " + minL2 + " " + minL3 + " New Location 1 : "+ 
+  Newl[0].name +" ,"+ Loca[0].name+", 2 "+Newl[1].name +", "+ Loca[1].name
+   +" 3 "+Newl[2].name +", "+ Loca[2].name+" 4 "+ Newl[3].name +", "+ Loca[3].name);
+   Newlocations = Newl;
+  return Newl;
+}
+
 
   const onChangeTwo = ( event, selectedDate) =>{
-    hideTimePickerTwo();
-    const currentDate =selectedDate || data;
-    let tempDate = new Date(currentDate);
-    let hourTwo =`${(tempDate.getHours())}`+ ':'+ `${(tempDate.getMinutes())}`;
-    settwoHour(hourTwo);
-    console.log(hourTwo);
-  }
+      hideTimePickerTwo();
+      const currentDate =selectedDate || data;
+      let tempDate = new Date(currentDate);
+      setHL2(tempDate.getHours());
+      let hourTwo =`${(tempDate.getHours())}`+ ':'+ `${(tempDate.getMinutes())}`;
+      settwoHour(hourTwo);
+      console.log(hourTwo);
+    if(CheckHoursAfter(HL1,tempDate.getHours())){alert('Please select another houres');settwoHour("00");}       
+    if(CheckHours(OneHour,hourTwo)){
+      alert('Please select another houres');settwoHour("00");}
+    else if((checkOpenTravel(Newlocations[0],Newlocations[1],tempDate.getHours())))alert('Please select another houres its closed !');
+    else setIcon2('done');
 
+}
 
   const onChangDate = ( event, selectedDate) =>{
     hideDatePicker();
@@ -124,8 +264,20 @@ const [selectedValue, setSelectedValue] = useState("");
     let tempDate = new Date(currentDate);
     let hourThree =`${(tempDate.getHours())}`+ ':'+ `${(tempDate.getMinutes())}`;
     setthreeHour(hourThree);
+    setHL3(tempDate.getHours());
     console.log(hourThree);
-  }
+    if(CheckHoursAfter(HL2,tempDate.getHours())){alert('Please select another houres');setthreeHour("000");}       
+    if(CheckHours(twoHour,hourThree)){
+      alert('Please select another houres');
+      setthreeHour("000");
+    }else if(CheckHours(OneHour,hourThree)) {
+     alert('Please select another houres');
+     setthreeHour("000");
+    } else if((checkOpenTravel(Newlocations[1],Newlocations[2],tempDate.getHours())))alert('Please select another houres its closed !');
+    else setIcon3('done');
+
+}
+
 
 
   const changeSelectedDate = (event, selectedDate) => {
@@ -133,17 +285,58 @@ const [selectedValue, setSelectedValue] = useState("");
     console.log(currentDate);
  };
 
+ const ShowOpenClose = (Location) => {
+  if(Location.opening_hours){
+    alert('Open at '+Location.opening_hours.days.mon.start.hour+':'+
+    Location.opening_hours.days.mon.start.minute)
+  }else{alert('Open at 24h');}
+ }
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.sectionTitle}>Add Travel! </Text>
-            <View style={styles.container}>
-            <View style={{justifyContent: 'space-between'}}>
+ function getClucHoures (lat1,lat2,lng1,lng2) {
+
+    var dLat = lat2 - lat2; 
+    var dLon = lng2 - lng1; 
+    var dPhi = Math.log(Math.tan(lat2 / 2 + Math.PI / 4) / Math.tan(lat1 / 2 + Math.PI / 4)); 
+    var q = (Math.abs(dLat) > 0) ? dLat / dPhi : Math.cos(lat1); 
+    if(dLon<0) dLon =dLon*-1;
+    if (dLon > Math.PI) 
+    { 
+        dLon = dLon > 0 ? -(2 * Math.PI - dLon) : (2 * Math.PI + dLon); 
+    } 
+    var brng = ToDegree(Math.atan2(dLon, dPhi)); 
+    return brng/60; 
+}
+
+
+function ToDegree (val){ return val * 180 / Math.PI; } 
+
+const checkOpenTravel = (Loc1, Loc2, hour) =>{
+  var decH = getClucHoures(Loc1.coordinates.latitude,
+                Loc2.coordinates.latitude,
+                Loc1.coordinates.longitude,
+                Loc2.coordinates.longitude);
+
+  if(Loc2.opening_hours === null ) return false;
+  else if(Loc2.opening_hours.days.mon.end.hour < hour+decH) return false;
+  else return true;
+}
+
+
+return (
+        <View style={styles.container2} >
+            <ImageBackground source={image} resizeMode="cover" style={styles.img}>
+
+
+           <View style={{alignItems: 'center'}}>
             
-            <TextInput style={styles.input} onChangeText={onChangeNameTrack} value={NameTrack}/>
-            <Text style={styles.Birth}>  </Text>
-            <View>
-              <DatePicker style={{ width: '80%' }}
+           <Text style={styles.sectionTitle} >Add Travel! </Text>
+           
+           </View>
+
+            <View style={styles.round}>
+              <TextInput style={styles.input} onChangeText={onChangeNameTrack} value={NameTrack}/>
+              <View style={{}}>
+              <DatePicker style={{ width: 150 }}
               date={date}
               placeholder={selectData}
               format='YYYY/MM/DD'
@@ -151,26 +344,23 @@ const [selectedValue, setSelectedValue] = useState("");
               cancelBtnText='Cancel'
               placeholderTextColor='red'
               onDateChange={(d) => setselectData(d)}/>
+              </View>
             </View>
 
-              </View>
 
-              <View style={{ flexDirection: 'row' }}>
+            <View style={styles.round}>              
               <Picker
                   mode='dropdown'
-                  style={{ height: 50, width: 250 }}
+                  style={{ height: 50, width: 200 }}
                   selectedValue={selectedValue}
-                  onValueChange={(itemValue, itemIndex) => setOneLocation(itemValue)}>
-                  <Picker.Item label={locations[0].name} value={locations[0].name} />
-                  <Picker.Item label={locations[1].name} value={locations[1].name} />
-                  <Picker.Item label={locations[2].name} value={locations[2].name} />
-                  <Picker.Item label={locations[3].name} value={locations[3].name} />
+                  onValueChange={(itemValue, itemIndex) => setOneLocation(Newlocations[0].name)}>
+                  <Picker.Item label={Newlocations[0].name} value={Newlocations[0].name} />
                 </Picker>
-                <View>
-                     <Button title="Select Hour" onPress={showTimePickerOne} />
+                     <Button title="Hour" onPress={showTimePickerOne} />
                        { isTimePickerVisibleOne && <DateTimePicker
                        mode="time"
                        value={Time}
+                       backgroundColor = "green"
                        onCancel={hideTimePickerOne}
                        locale="en_EN"
                        is24Hour={true}
@@ -178,121 +368,132 @@ const [selectedValue, setSelectedValue] = useState("");
                        headerTextIOS="Choose the hour"
                       />}
                        <Text>{OneHour}</Text>
-                  </View>
+                       <TouchableOpacity >
+                       <Icon name="timer" color="black" onPress={()=> ShowOpenClose(Newlocations[0])}/>
+                       </TouchableOpacity>
+
+                       <TouchableOpacity >
+                       <Icon name={icon1} color="black"/>
+                       </TouchableOpacity>
+                 
               </View>
 
-              <View style={{ flexDirection: 'row' }}>
+              <View style={styles.round}>              
               <Picker
                   mode='dropdown'
-                  style={{ height: 50, width: 250 }}
+                  style={{ height: 50, width: 200 }}
                   selectedValue={OneLocation}
-                  onValueChange={(itemValue, itemIndex) => setTwoLocation(itemValue)}>
-                  <Picker.Item label={locations[0].name} value={locations[0].name} />
-                  <Picker.Item label={locations[1].name} value={locations[1].name} />
-                  <Picker.Item label={locations[2].name} value={locations[2].name} />
-                  <Picker.Item label={locations[3].name} value={locations[3].name} />
+                  onValueChange={(itemValue, itemIndex) => setTwoLocation(Newlocations[1].name)}>
+                  <Picker.Item label={Newlocations[1].name} value={Newlocations[1].name} />
                 </Picker>
-                <View>
-                     <Button title="Select Hour" onPress={showTimePickerTwo} />
+                     <Button title="Hour" onPress={showTimePickerTwo} />
                        { isTimePickerVisibleTwo && <DateTimePicker
                        mode="time"
                        value={Time}
                        onCancel={hideTimePickerTwo}
                        locale="en_EN"
+                       is24Hour={true}
                        onChange={onChangeTwo}
                        headerTextIOS="Choose the hour"
                       />}
                        <Text>{twoHour}</Text>
-                  </View>
-              </View>
-              <View style={{ flexDirection: 'row' }}>
+                       <TouchableOpacity >
+                       <Icon name="timer" color="black" onPress={()=> ShowOpenClose(Newlocations[1])}/>
+                       </TouchableOpacity>
+
+                       <TouchableOpacity >
+                       <Icon name={icon2} color="black"/>
+                       </TouchableOpacity>              
+                      </View>
+
+            <View style={styles.round}>              
               <Picker
                   mode='dropdown'
-                  style={{ height: 50, width: 250 }}
+                  style={{ height: 50, width: 200 }}
                   selectedValue={selectedValue}
-                  onValueChange={(itemValue, itemIndex) => setThreeLocation(itemValue)}>
-                  <Picker.Item label={locations[0].name} value={locations[0].name} />
-                  <Picker.Item label={locations[1].name} value={locations[1].name} />
-                  <Picker.Item label={locations[2].name} value={locations[2].name} />
-                  <Picker.Item label={locations[3].name} value={locations[3].name} />
+                  onValueChange={(itemValue, itemIndex) => setThreeLocation(Newlocations[2].name)}>
+                  <Picker.Item label={Newlocations[2].name} value={Newlocations[2].name} />
+
                 </Picker>
-                <View>
-                     <Button title="Select Hour" onPress={showTimePickerThree} />
+                     <Button title="Hour" onPress={showTimePickerThree} />
                        { isTimePickerVisibleThree && <DateTimePicker
                        mode="time"
                        value={Time}
                        onCancel={hideTimePickerThree}
                        locale="en_EN"
+                       is24Hour={true}
                        onChange={onChangeThree}
                        headerTextIOS="Choose the hour"
                       />}
                        <Text>{threeHour}</Text>
-                  </View>
-              </View>   
+                       <TouchableOpacity >
+                       <Icon name="timer" color="black" onPress={ ()=> ShowOpenClose(Newlocations[2])}/>
+                       </TouchableOpacity>
+
+                       <Icon name={icon3} color="black"/>
+                      </View>   
               
-              <View style={{ flexDirection: 'row' }}>
+              <View style={styles.round}>              
               <Picker
                   mode='dropdown'
-                  style={{ height: 50, width: 250 }}
+                  style={{ height: 50, width: 200 }}
                   selectedValue={selectedValue}
-                  onValueChange={(itemValue, itemIndex) => setFourLocation(itemValue)}>
-                  <Picker.Item label={locations[0].name} value={locations[0].name} />
-                  <Picker.Item label={locations[1].name} value={locations[1].name} />
-                  <Picker.Item label={locations[2].name} value={locations[2].name} />
-                  <Picker.Item label={locations[3].name} value={locations[3].name} />
+                  onValueChange={(itemValue, itemIndex) => setFourLocation(Newlocations[3].name)}>
+                  <Picker.Item label={Newlocations[3].name} value={Newlocations[3].name} />
                 </Picker>
-                <View>
-                     <Button title="Select Hour" onPress={showTimePickerFour} />
+                     <Button title="Hour" onPress={showTimePickerFour} />
                        { isTimePickerVisibleFour && <DateTimePicker
-                       mode="time"
+                        mode="time"
                        value={Time}
+                       is24Hour={true}
+
                        onCancel={hideTimePickerFour}
                        locale="en_EN"
                        onChange={onChangeFour}
                        headerTextIOS="Choose the hour"
                       />}
                        <Text>{fourHour}</Text>
-                  </View>
+                       <TouchableOpacity >
+                       <Icon name="timer" color="black" onPress={()=> ShowOpenClose(Newlocations[3])}/>
+                       </TouchableOpacity>
+                       <TouchableOpacity >
+                       <Icon name={icon4} color="black"/>
+                       </TouchableOpacity>
+
               </View>       
               <TouchableOpacity >
-             <Button style={styles.button} title="Save" onPress={onAdd} >
+             <Button style={styles.button} title="Save" onPress={onAdd}>
              </Button>
              </TouchableOpacity>
-    </View>
-
+             </ImageBackground>
         </View>
         
     );
 };
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-
-      input: {
-        marginTop: -10,
-        height: 10,
-        width:'20%',
-        borderColor: '#e1e1e1',
-        borderWidth:0,
-        borderStyle: 'solid',
-      },   
+    input: {
+      height: 40,
+      width: 180,
+      margin: 12,
+      borderWidth: 1,
+      backgroundColor:'white',
+      padding: 10,
+    }, 
+    img: {
+      flex: 1,
+      justifyContent: "center"
+    },  
     round: {
-        margin: 40,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-      },
-      label: {
-        fontWeight: 'bold',
-        fontSize: 18,
-        marginTop: 20,
+      paddingTop: 30 ,
+       justifyContent: 'space-between',
+       alignItems:'center' ,
+        flexDirection: 'row' ,
+         flexWrap : 'wrap'
       },
     button: {
+      marginTop: 30 ,
         width: 100,
         height: 50,
-        borderRadius: 10,
-        backgroundColor: 'green',
-        bottom: 50,
         right: 10,
         shadowColor: '#000',
         shadowOffset: {
@@ -301,83 +502,19 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: .8,
         shadowRadius: 5,
-        elevation: 5,
     },
-    label: {
-        fontSize: 16,
-        color: 'black',
-        marginRight: 10,
-        fontWeight: 'bold'
-    },
-    plus: {
-        fontSize: 40,
-        color: '#fff',
-        position: 'absolute',
-        top: -6,
-        left: 9,
-    },
-    container: {
-        flex: 1,
-        backgroundColor: '#E8EAED',
-      },
-      tasksWrapper: {
-        paddingTop: 80,
-        paddingHorizontal: 20,
-      },
-      pickerStyle: {
-        width: 250,
-        height: 40,
-        borderColor: "transparent",
-        borderBottomColor: "black",
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        backgroundColor: "transparent",
-        marginBottom: 5,
-      },
       sectionTitle: {
         fontSize: 24,
-        fontWeight: 'bold'
-      },
-      items: {
-        marginTop: 30,
-      },
-      writeTaskWrapper: {
-        position: 'absolute',
-        bottom: 60,
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
+        fontWeight: 'bold',
         alignItems: 'center'
       },
-      input: {
-        paddingVertical: 15,
-        paddingHorizontal: 15,
-        backgroundColor: '#FFF',
-        borderRadius: 60,
-        borderColor: '#C0C0C0',
-        borderWidth: 1,
-        width: 250,
-      },
-        container: {
+      container: {
+          paddingTop: 60,
+          backgroundColor : 'white'
+        }, 
+      container2: {
           flex: 1,
-          paddingTop: 40,
-          alignItems: "center"
-        },
-      addWrapper: {
-        width: 60,
-        height: 60,
-        backgroundColor: 'green',
-        borderRadius: 60,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderColor: '#C0C0C0',
-        borderWidth: 1,
-      },
-    Birth: {
-      color: 'black',
-      marginBottom: 15
-  
-    },
-      addText: {},
-      
+        },     
 });
+
 export default ChooseLocation;
