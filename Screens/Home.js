@@ -3,8 +3,7 @@ import { Text, View,SafeAreaView, Dimensions, Image,Button
   ,ScrollView,StyleSheet,TouchableOpacity} from 'react-native';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import Carousel from 'react-native-snap-carousel';
-import {useIsFocused } from '@react-navigation/native';
-import { NumberInput } from 'native-base';
+
 
 export const SLIDER_WIDTH = Dimensions.get('window').width + 30;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
@@ -70,19 +69,7 @@ const Home = ({ navigation }) => {
     console.log('ADD select '+ selectData[index].isSelected);
     console.log('ADD   '+ index);
     console.log(arr1 + " length : "+ arr1.length);
-   // navigation.navigate('ChooseLocation')
-}/*
-const fetchValue = (data) => {
-    console.log("this is data", data)
-    setState({
-        ...state,
-        destinationCords: {
-            latitude: data.destinationCords.latitude,
-            longitude: data.destinationCords.longitude,
-        },
-    })
 }
-*/
 
   const renderItem = ({ item , index }) => {
 
@@ -112,9 +99,26 @@ const fetchValue = (data) => {
       </View>
     );
   }
+  const fetchData = async() =>{
 
-  useEffect(() => {
-    fetch("https://www.triposo.com/api/20220104/poi.json?location_id=Eilat&fields=all&count=10&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco", {
+    setLoading(true);
+    setData([])
+    try{
+      const respon = await axios.get("https://www.triposo.com/api/20220104/poi.json?location_id=Eilat&fields=all&count=10&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco",{})
+      setLoading(false);
+      setData(respon.data)
+      MapArrLocations();
+      console.log(respon.data)
+
+    }
+    catch(e) {
+      console.log(e)
+    }
+  }
+
+  useEffect(async () => {
+    const respon = await fetch("https://www.triposo.com/api/20220104/poi.json?location_id=Eilat&fields=all&count=10&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco",{
+      method: "GET",
       method: 'GET',
       headers: new Headers({
         'Content-Type': 'application/json; charset=UTF-8',
@@ -132,7 +136,7 @@ const fetchValue = (data) => {
           return null;
         }
       )
-  }, []);
+  },[]);
   return (
     loading === false ? <ScrollView>
       <View >
@@ -158,8 +162,7 @@ const fetchValue = (data) => {
     </ScrollView> : <Image source={require('../Images/img.gif')}/>
 
   );
-};
-export default Home;
+}
 
 const styles = StyleSheet.create({
   containerFlex: {
@@ -244,3 +247,4 @@ const styles = StyleSheet.create({
       left: 9,
   }
 });
+export default Home;
