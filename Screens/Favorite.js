@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { useDispatch } from 'react-redux'
-import { setDestination } from '../slices/navSlice'
 
 const favorites = [
     {

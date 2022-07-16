@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { useDispatch } from 'react-redux'
-import { setDestination } from '../slices/navSlice'
 import { LocationData } from '../data/allLocations'
 const IC_ARR_DOWN = require('../Images/ic_arr_down.png');
 const IC_ARR_UP = require('../Images/ic_arr_up.png');

@@ -101,7 +101,7 @@ const Home = ({ navigation }) => {
   }
 
   useEffect(async () => {
-    const respon = await fetch("https://www.triposo.com/api/20220104/poi.json?location_id=Eilat&fields=all&count=10&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco",{
+    await fetch("https://www.triposo.com/api/20220104/poi.json?location_id=Eilat&fields=all&count=10&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco",{
       method: "GET",
       headers: new Headers({
         'Content-Type': 'application/json; charset=UTF-8',
@@ -114,9 +114,8 @@ const Home = ({ navigation }) => {
       }).then(
         (result) => { setData(result.results); MapArrLocations(result.results);setLoading(false);},
         (error) => {return null;})
-    }, []);
+    }, [10]);
 
-  console.log(" nm hjj " + data)
 
   return (
     loading === false ? <ScrollView>

@@ -11,7 +11,6 @@ import Notification from './Screens/Notification';
 import ChooseLocation from './Screens/ChooseLocation';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import Camera from './Screens/Camera';
-import AddLocation from './Screens/AddLocation';
 import Track from './Screens/Track';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -80,7 +79,6 @@ export default function App() {
         <Stack.Screen name="Camera" component={Camera}></Stack.Screen>
         <Stack.Screen name="Profile" component={TabBar}></Stack.Screen>
         <Stack.Screen name="ChooseLocation" component={ChooseLocation}></Stack.Screen>
-        <Stack.Screen name="AddLocation" component={AddLocation}></Stack.Screen>
 
 
         <Stack.Screen name="Home" component={TabBar}  options={{headerShown:false}}></Stack.Screen>
