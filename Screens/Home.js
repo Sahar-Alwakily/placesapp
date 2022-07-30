@@ -3,8 +3,7 @@ import { Text, View,SafeAreaView, Dimensions, Image,Button
   ,ScrollView,StyleSheet,TouchableOpacity} from 'react-native';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import Carousel from 'react-native-snap-carousel';
-
-const axios = require('axios').default;
+//const axios = require('axios').default;
 
 export const SLIDER_WIDTH = Dimensions.get('window').width + 30;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
@@ -65,14 +64,13 @@ const Home = ({ navigation }) => {
       selectData[index].isSelected=false;
       removeItemOnce(arr1,index);
     }
-    if(arr1.length > 1){setIsDone(true);}
+    if(arr1.length == 4){setIsDone(true);}
     console.log('ADdD select '+ selectData[index].isSelected);
     console.log('ADD ff    '+ index);
     console.log(arr1 + " length : "+ arr1.length);
 }
 
   const renderItem = ({ item , index }) => {
-
     return (
       <View
         style={{
@@ -89,10 +87,10 @@ const Home = ({ navigation }) => {
         <Image source={{ uri: item.images.length > 0 ? item.images[0].sizes.medium.url : 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/450px-No_image_available.svg.png?20190827162820'}} style={{ width: 200, height: 200 }} />
         <Text style={{ marginVertical: 10, fontSize: 20, fontWeight: 'bold' }}> {item.name}</Text>
         <Text style={{ color: 'green' ,marginVertical: 10, fontSize: 20, fontWeight: 'bold'}}>{(item.score).toFixed(2)}</Text>
-        <Text style={{ color: 'green' ,marginVertical: 10, fontSize: 20, fontWeight: 'bold'}} onPress={() => navigation.navigate('ItemPage',{item:item})}>show more</Text>
+        <Text style={{ color: 'green' ,marginVertical: 10, fontSize: 20, fontWeight: 'bold'}} onPress={() => navigation.navigate('Items',{item:item})}>show more</Text>
         <Icon name='star'></Icon>
         <TouchableOpacity>
-        <Button style={styles.buttinContainer} title={selectData[index].isSelected?"ADDing":"Add"}
+        <Button style={styles.buttinContainer} title={selectData[index].isSelected?"Delete":"Add"}
                         onPress={() => addPlsaces(index)}>
                         </Button>
         </TouchableOpacity>
@@ -131,7 +129,7 @@ const Home = ({ navigation }) => {
         </SafeAreaView>
       </View>
 
-      <Text style={{ marginVertical: 5, fontSize: 15, fontWeight: 'bold' }}> u can select A Location 2-4 and u chouse ({arr1.length})  </Text>
+      <Text style={{ marginVertical: 5, fontSize: 15, fontWeight: 'bold',color:"gray" }}> You Can Select 4 Locations ({arr1.length})  </Text>
       <TouchableOpacity>
         {isDone && <Button title="Done"
         onPress={() => MapArrAllSelectLocations()}

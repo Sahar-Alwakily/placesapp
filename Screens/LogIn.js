@@ -2,12 +2,84 @@
 import { StyleSheet, Text, View, Dimensions,TouchableOpacity,TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import React, { useState } from 'react';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
+import { useEffect } from 'react';
+import { auth } from './firebase';
+export const kk = [];
 const LogIn = ({ navigation }) => {
   const [passwordVisible, setPasswordVisible] = useState(true);
-  const [userName, setUserName] = useState('');
+  const [username, setusername] = useState("");
   const [password, setPassword] = useState('');
+
+
+  const [info, setInfo] = useState("null");
+  const [info2, setInfo2] = useState(null);
+  const [loadingg, setLoadingg] = useState(false);
+  const [data, setData] = useState(null);
+  let items = [];
+
+  
+  const fun = () =>{
+       {
+           fetch("http://194.90.158.74/bgroup61/test2/tar5/api/Recommendation?userId=90", {
+              method: 'GET',
+              headers: new Headers({
+                  'Content-Type': 'application/json; charset=UTF-8',
+                  'Accept': 'application/json; charset=UTF-8'
+              })
+          }).then(res=> {
+              console.log('res status', res.status);
+              return res.json();
+          }).then(
+              (result) => { console.log(result);
+                   setData(result);
+                   setInfo(result);
+                   calltripeso(result);
+                  },
+              (error) => {return null;})
+          }
+          if (data != null) {
+              console.log('user places : ', data);
+         }
+      }
+
+
+  const calltripeso = (async (info) => {
+      console.log('print info part 2 :', info)
+      const t = Promise.all(info.map(item => getItem(item)))
+  })
+
+  const getItem = async (item) => {
+
+      fetch("https://www.triposo.com/api/20220104/poi.json?id=" + item + "&fields=all&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco", {
+          method: 'GET',
+          headers: new Headers({
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Accept': 'application/json; charset=UTF-8'
+          })
+      }).then(res=> {
+          console.log('res status', res.status);
+          return res.json();
+      }).then((result) => {//setInfo2(info2 => [...info2, result.results]);
+          items.push(result.results)
+          setLoadingg(true)
+          console.log("get item from triposo func : ", items.length)
+      })
+      items !== null ? setLoadingg(true) : null;
+
+}
+
+  const handlelogin = ()=>{
+    auth
+    .signInWithEmailAndPassword(email,password)
+    .then(userCredentials =>{
+      const user = userCredentials.user;
+      kk.push(user.email)
+      navigation.navigate("Home")
+    })
+    .catch(error=>{alert(error.message);})
+  }
   const submitFun = () => {
-    fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Users?pass=' + password + '&userName=' + userName, {
+    fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Users?pass=' + password + '&userName=' + email, {
       method: 'Get',
       headers: new Headers({
         'Content-Type': 'application/json; charset=UTF-8',
@@ -28,6 +100,8 @@ const LogIn = ({ navigation }) => {
           console.log("err post=", error);
         }
       );
+
+      fun();
   }
 
   return (
@@ -46,34 +120,32 @@ const LogIn = ({ navigation }) => {
               <Text style={styles.loginTitleText} >Welcome to Enjoy It</Text>
               <View style={styles.hr}></View>
               <View style={styles.inputBox}>
-                <Text style={styles.inputLabel} onChangeText={name => setUserName(name)}>Name</Text>
-                <TextInput style={styles.input} />
+                <Text style={styles.inputLabel} onChangeText={setusername}>Name</Text>
+                <TextInput value={username} onChangeText={setusername} style={styles.input} />
               </View>
               <View style={styles.inputBox}>
-                <Text style={styles.inputLabel} onChangeText={pass => setPassword(pass)}>Password</Text>
+                <Text style={styles.inputLabel}>Password</Text>
                 <TextInput
                    secureTextEntry={passwordVisible}
                    style={styles.input}
+                   onChangeText={setPassword}
+                   value={password}
                 
                   label='password'
                 />
               </View>
-              <TouchableOpacity style={styles.loginButton}>
-                <Text style={styles.loginButtonText} onPress={() => navigation.navigate('Home')}>Login</Text>
+              <TouchableOpacity style={styles.loginButton} onPress={submitFun}>
+                <Text style={styles.loginButtonText}>Login</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={()=>{navigation.navigate("SignUp")}}>
                 <Text style={styles.registerText}>
                   Don't have an account?
                 </Text>
-                <Text style={styles.registerText} onPress={() => navigation.navigate('SignUp')}>Sign Up</Text>
-
-
+                <Text style={styles.registerText}>Sign Up</Text>
               </TouchableOpacity>
-
-                
-
-              
-
+              <TouchableOpacity style={styles.loginButton} onPress={() => { navigation.navigate("Recommendation") }}>
+                <Text style={styles.loginButtonText}>Recommendation</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

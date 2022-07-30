@@ -1,79 +1,176 @@
-import { View, Image, Text, StyleSheet, TextInput,ScrollView  } from 'react-native';
-import { Icon } from 'react-native-elements';
-var ImgUrl = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+import React from "react";
+import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView } from "react-native";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Icon } from "react-native-elements";
 
-export default function Profile({ navigation,route ,props}) {
-    const user ={
-        id:1,
-        name:'Ahmad',
-        address:'Baqa',
-        phoneNumber:'0503',
-        userName:'Ahmad@123',
-        gender:'male',
-        birthDate:'22/03/2000',
-        password:'aaa123'
-    }
+const Profile = ({ route, navigation }) => {
     return (
-    <ScrollView>
-        <View style={styles.container}>  
-            <View style={{
-                flex: 0.4, justifyContent: 'center', alignItems: 'center'
-            }}>
-                <Image
-                    source={{ uri: ImgUrl}}
-                    style={{ width: 150, height: 150, borderWidth: 1, borderColor: 'green', margin: 20, borderRadius: 180 }}
-                />
-                 <Icon name='camera' type='font-awesome' style={styles.Text} onPress={() => navigation.navigate('Camera')} size={30} marginTop={3}  marginLeft={2} color='white'></Icon>
-            </View>
-            <Text style={styles.tex}>Name: {user.name}</Text>
-            <Text style={styles.tex}>UserName: {user.userName}</Text>
-            <TextInput placeholder='Password' placeholderTextColor='#fff' secureTextEntry={true} style={styles.TextInput} />
-            <TextInput placeholder={user.phoneNumber} placeholderTextColor='#fff' style={styles.TextInput} />
-            <Text placeholder={user.address} placeholderTextColor='#fff' style={styles.TextInput}>Address</Text>
-            <Text style={styles.tex}>Gender: {user.gender}</Text>
-            <Text style={styles.tex}>BirthDate: {user.birthDate}</Text>
-            <Text style={styles.Text}>Save</Text>
-        </View>
-    </ScrollView>
+        <SafeAreaView style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false}>  
+                <View style={{ alignSelf: "center" }}>
+                    <View style={styles.profileImage}>
+                        <Image source={{uri:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/450px-No_image_available.svg.png?20190827162820' }} style={styles.image} resizeMode="center"></Image>
+                    </View>
+                    <View style={styles.active}></View>
+                    <View style={styles.add}>
+                        <Ionicons name="camera" size={30} color="white" style={{ marginTop: 6, marginLeft: 2 }}></Ionicons>
+                    </View>
+                </View>
+
+                <View style={styles.infoContainer}>
+                    <Text style={[styles.text, { fontWeight: "200", fontSize: 36 }]}>Name</Text>
+                    <Text style={[styles.text, { color: "#AEB5BC", fontSize: 14 }]}>@username</Text>
+
+                </View>
+
+                <View style={styles.statsContainer}>
+                    <View style={styles.statsBox}>
+                        <Text style={[styles.text, { fontSize: 24 }]}><Icon name="phone" size={29} color="green"></Icon> :</Text>
+                    </View>
+                    <View style={styles.statsBox}>
+                        <Text style={[styles.text, { fontSize: 24 }]}><Icon name='place' size={29} color="green"></Icon> :</Text>
+                    </View>
+                    <View style={styles.statsBox}>
+                        <Text style={[styles.text, { fontSize: 24 }]}><Ionicons name="calendar" size={26} color="green"></Ionicons> :</Text>
+                    </View>
+                </View>
+                <Text style={styles.Text} onPress={() => navigation.navigate('EditProfileScreen')} >Edit Profile</Text>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
+export default Profile;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'mediumseagreen',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'black'
+        backgroundColor: "#FFF"
     },
-    tex: {
-        color: 'black',
-        borderWidth: 2,
-        borderColor: 'white',
-        width: 300,
-        height: 40,
-        padding: 5,
-        marginTop: 15
+    text: {
+       
+        color: "#52575D"
     },
-    TextInput: {
-
+    Text:{
+        marginTop: 40,
+        borderColor: 'green',
         borderWidth: 2,
-        borderColor: 'white',
-        color: 'black',
-        width: 300,
-        height: 40,
-        padding: 5,
-        marginTop: 15
-
-    },
-    Text: {
-        marginTop: 20,
-        borderColor: 'white',
-        borderWidth: 2,
+        borderRadius:10,
         color: 'black',
         width: 95,
         height: 30,
         textAlign: 'center',
-        marginBottom: 30,
-        padding: 3
+        padding: 3,
+        marginLeft:130
+    },
+    image: {
+        flex: 1,
+        height: undefined,
+        width: undefined
+    },
+    titleBar: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 24,
+        marginHorizontal: 16
+    },
+    subText: {
+        fontSize: 12,
+        color: "#AEB5BC",
+        textTransform: "uppercase",
+        fontWeight: "500"
+    },
+    profileImage: {
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        overflow: "hidden"
+    },
+    dm: {
+        backgroundColor: "#41444B",
+        position: "absolute",
+        top: 20,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    active: {
+        backgroundColor: "#34FFB9",
+        position: "absolute",
+        bottom: 28,
+        left: 10,
+        padding: 4,
+        height: 20,
+        width: 20,
+        borderRadius: 10
+    },
+    add: {
+        backgroundColor: "#41444B",
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    infoContainer: {
+        alignSelf: "center",
+        alignItems: "center",
+        marginTop: 16
+    },
+    statsContainer: {
+        flexDirection: "column",
+        //alignSelf: "center",
+        marginTop: 32
+    },
+    statsBox: {
+       padding:5,
+       marginLeft:20
+    },
+    mediaImageContainer: {
+        width: 180,
+        height: 200,
+        borderRadius: 12,
+        overflow: "hidden",
+        marginHorizontal: 10
+    },
+    mediaCount: {
+        backgroundColor: "#41444B",
+        position: "absolute",
+        top: "50%",
+        marginTop: -50,
+        marginLeft: 30,
+        width: 100,
+        height: 100,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 12,
+        shadowColor: "rgba(0, 0, 0, 0.38)",
+        shadowOffset: { width: 0, height: 10 },
+        shadowRadius: 20,
+        shadowOpacity: 1
+    },
+    recent: {
+        marginLeft: 78,
+        marginTop: 32,
+        marginBottom: 6,
+        fontSize: 10
+    },
+    recentItem: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        marginBottom: 16
+    },
+    activityIndicator: {
+        backgroundColor: "#CABFAB",
+        padding: 4,
+        height: 12,
+        width: 12,
+        borderRadius: 6,
+        marginTop: 3,
+        marginRight: 20
     }
 });

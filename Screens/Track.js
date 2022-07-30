@@ -6,7 +6,7 @@ import { LocationData } from '../data/allLocations'
 const IC_ARR_DOWN = require('../Images/ic_arr_down.png');
 const IC_ARR_UP = require('../Images/ic_arr_up.png');
 import DropDownItem from 'react-native-drop-down-item';
-
+import { Newlocations } from './UpdateTrack'
 const favorites = LocationData;
 
 const Track = ({route, navigation }) => {
@@ -19,7 +19,6 @@ const Track = ({route, navigation }) => {
         LocationData[i].threeLocation + ' ' + LocationData[i].threeHour + ' \n' +
         LocationData[i].fourLocation + ' ' + LocationData[i].fourHour + ' \n';
     }
-
     return (
         <View style={styles.container}>
           <ScrollView style={{ alignSelf: 'stretch' }}>

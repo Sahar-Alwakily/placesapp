@@ -2,13 +2,11 @@ import React, {  useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DatePicker from 'react-native-datepicker';
 import { View, Text, StyleSheet,TouchableOpacity,TextInput ,Picker,Button} from 'react-native';
-import { LocationData ,deletee} from '../data/allLocations'
+import { LocationData } from '../data/allLocations'
 import { Icon } from 'react-native-elements'
 
 
-
 const UpdateTrack = ({ route ,navigation}) => {
-  let Newlocations = []
 
 const [selectedValue, setSelectedValue] = useState("");
 
@@ -33,10 +31,8 @@ const [selectedValue, setSelectedValue] = useState("");
      item.selectData = selectData;
 
         alert("UPADTE nice !");
-        deletee(indexKey);
-
+        LocationData.pop(0)
         LocationData.push(item);
-
         navigation.navigate('Track');//new arr 
 
     }
@@ -220,14 +216,10 @@ return (
             </View>
 
 
-            <View style={styles.round}>              
-              <Picker
-                  mode='dropdown'
-                  style={{ height: 50, width: 200 }}
-                  selectedValue={selectedValue}
-                  onValueChange={(itemValue, itemIndex) => setOneLocation(OneLocation)}>
-                  <Picker.Item label={OneLocation} value={OneLocation} />
-                </Picker>
+            <View style={styles.round}>    
+
+            ///          
+  
                      <Button title="Hour" onPress={showTimePickerOne} />
                        { isTimePickerVisibleOne && <DateTimePicker
                        mode="time"
@@ -251,13 +243,7 @@ return (
               </View>
 
               <View style={styles.round}>              
-              <Picker
-                  mode='dropdown'
-                  style={{ height: 50, width: 200 }}
-                  selectedValue={OneLocation}
-                  onValueChange={(itemValue, itemIndex) => setTwoLocation(twoLocation)}>
-                  <Picker.Item label={twoLocation} value={twoLocation} />
-                </Picker>
+
                      <Button title="Hour" onPress={showTimePickerTwo} />
                        { isTimePickerVisibleTwo && <DateTimePicker
                        mode="time"
@@ -279,14 +265,7 @@ return (
                       </View>
 
             <View style={styles.round}>              
-              <Picker
-                  mode='dropdown'
-                  style={{ height: 50, width: 200 }}
-                  selectedValue={selectedValue}
-                  onValueChange={(itemValue, itemIndex) => setThreeLocation(threeLocation)}>
-                  <Picker.Item label={threeLocation} value={threeLocation} />
 
-                </Picker>
                      <Button title="Hour" onPress={showTimePickerThree} />
                        { isTimePickerVisibleThree && <DateTimePicker
                        mode="time"
@@ -306,13 +285,7 @@ return (
                       </View>   
               
               <View style={styles.round}>              
-              <Picker
-                  mode='dropdown'
-                  style={{ height: 50, width: 200 }}
-                  selectedValue={selectedValue}
-                  onValueChange={(itemValue, itemIndex) => setFourLocation(fourLocation)}>
-                  <Picker.Item label={fourLocation} value={fourLocation} />
-                </Picker>
+
                      <Button title="Hour" onPress={showTimePickerFour} />
                        { isTimePickerVisibleFour && <DateTimePicker
                         mode="time"

@@ -1,16 +1,15 @@
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TextInput,TouchableOpacity } from 'react-native';
 import RadioGroup from 'react-native-radio-buttons-group';
 import React, { useState } from 'react';
 import { Input } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker';
-//import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
 import { ScrollView } from 'react-native-gesture-handler';
-//const homePlace = { description: 'Home', geometry: { location: { lat: 48.8152937, lng: 2.4597668 } } };
-//const workPlace = { description: 'Work', geometry: { location: { lat: 48.8496818, lng: 2.2940881 } } };
+
 import 'react-native-gesture-handler';
-
-
-
+import { addToAsyncStorage } from './asyncStorgae';
+import firebase, { auth } from './firebase'
+export var data_signup = []
 const radioButtonsData = [
   {
     id: '1',
@@ -35,23 +34,24 @@ const radioButtonsData = [
 ];
 
 const SignUp = ({ navigation }) => {
+
+
   const [radioButtons, setRadioButtons] = useState(radioButtonsData);
   const [date, setDate] = useState('');
   const [name, setName] = useState('');
-  const [userName, setUserName] = useState('');
-  //const [address, setAddress] = useState('');
+  const [email, setEmail] = useState(email);
+  const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-
   const onPressRadioButton = radioButtonsArray => {
     setRadioButtons(radioButtonsArray);
   };
 
-  const AddUser = () => {
+  const AddUser = ({navigation}) => {
 
     const s = {
       Name: name,
-      //Address: address,
+      Address: address,
       PhoneNumber: phoneNumber,
       UserName: userName,
       Gender: radioButtons[0].selected === true ? 'Male' : 'Female',
@@ -60,6 +60,7 @@ const SignUp = ({ navigation }) => {
       Image: ''
     }
     console.log(s);
+    
     fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Users', {
       method: 'Post',
       body: JSON.stringify(s),
@@ -85,14 +86,14 @@ const SignUp = ({ navigation }) => {
 
 
   }
-
+  
   return (
   <ScrollView>
     <View style={styles.container}>
       
         <Text style={styles.Text}>Sign Up to Enjoy It </Text>
         <TextInput placeholder='enter name' placeholderTextColor='black' style={styles.TextInput} onChangeText={name => setName(name)} />
-        <TextInput placeholder='enter UserName' placeholderTextColor='black' style={styles.TextInput} onChangeText={name => setUserName(name)} />
+        <TextInput placeholder='enter Email' placeholderTextColor='black' style={styles.TextInput} value={email} onChangeText={setEmail} />
         <TextInput placeholder='enter Password' placeholderTextColor='black' secureTextEntry={true} style={styles.TextInput} onChangeText={pass => setPassword(pass)} />
         <TextInput placeholder='enter PhoneNumber' placeholderTextColor='black' style={styles.TextInput} onChangeText={phone => setPhoneNumber(phone)} />
         
@@ -114,7 +115,10 @@ const SignUp = ({ navigation }) => {
           placeholderTextColor='black'
           onDateChange={(d) => setDate(d)}
         />
-        <Text style={styles.btn} onPress={AddUser}>Submit</Text>
+        <TouchableOpacity
+        onPress={AddUser}>
+        <Text style={styles.btn}>Submit</Text>
+      </TouchableOpacity>
       </View>  
       </ScrollView>
     

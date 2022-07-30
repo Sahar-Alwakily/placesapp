@@ -35,7 +35,7 @@ const [selectedValue, setSelectedValue] = useState("");
         alert("nice !");
         LocationData.push(item);
         console.log(item); 
-        navigation.navigate('Home');//new arr 
+        navigation.navigate('Track');//new arr 
 
     }
 
