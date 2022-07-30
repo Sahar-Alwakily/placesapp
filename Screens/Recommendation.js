@@ -89,7 +89,6 @@ const Recommendation = ({ navigation }) => {
             const obj = Object.assign({}, items);
             MapArr(obj)
             console.log("get item from triposo func : ",obj)
-            
 
         }
 

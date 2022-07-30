@@ -1,11 +1,10 @@
-import { StyleSheet, Text, View, TextInput,TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput,TouchableOpacity, ImageBackground } from 'react-native';
 import RadioGroup from 'react-native-radio-buttons-group';
-import React, { useState } from 'react';
+import React, { useState , useContext} from 'react';
 import { Input } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker';
-
+import { ContextForItems } from '../Components/Context';
 import { ScrollView } from 'react-native-gesture-handler';
-
 import 'react-native-gesture-handler';
 import { addToAsyncStorage } from './asyncStorgae';
 import firebase, { auth } from './firebase'
@@ -35,33 +34,32 @@ const radioButtonsData = [
 
 const SignUp = ({ navigation }) => {
 
-
+  const contextProp = useContext(ContextForItems);
   const [radioButtons, setRadioButtons] = useState(radioButtonsData);
   const [date, setDate] = useState('');
   const [name, setName] = useState('');
-  const [email, setEmail] = useState(email);
+  const [userName, setUserName] = useState('');
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const onPressRadioButton = radioButtonsArray => {
     setRadioButtons(radioButtonsArray);
   };
-
-  const AddUser = ({navigation}) => {
-
+   
+  const AddUser = (async() => {
     const s = {
+      UserId: 1,
+      UserName: userName,
       Name: name,
+      Password: password,
       Address: address,
       PhoneNumber: phoneNumber,
-      UserName: userName,
       Gender: radioButtons[0].selected === true ? 'Male' : 'Female',
       BirthDate: date,
-      Password: password,
-      Image: ''
+      Image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/450px-No_image_available.svg.png?20190827162820'
+
     }
-    console.log(s);
-    
-    fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Users', {
+    const response = await fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Users', {
       method: 'Post',
       body: JSON.stringify(s),
       headers: new Headers({
@@ -69,34 +67,43 @@ const SignUp = ({ navigation }) => {
         'Accept': 'application/json; charset=UTF-8'
       })
     })
-      .then(res => {
-        console.log('res=', res);
-        console.log('res.status', res.status);
-        console.log('res.ok', res.ok);
-        res.ok === true ?
-          navigation.navigate('Home') :
-          alert("try again later");
-        return res.json()
-      })
-      .then(
-        (error) => {
-          console.log("err post=", error);
-        }
-      );
+    const data = await response.json();
+    data !== null ? navigation.navigate('Home') : alert("try again later");
+    data!==null?contextProp.UpdateUser(data):null;
+
+    return data;
+  })
+
+  const saveInfoToFirebase = () => {
+    auth
+    .createUserWithEmailAndPassword(email,password)
+    .then(userCredentials =>{
+      const user = userCredentials.user;
+      console.log(user.email)
+      data_signup.push(name)
+      data_signup.push(email)
+      data_signup.push(" ")
+      data_signup.push(phoneNumber)
+      data_signup.push(address)
+      data_signup.push(radioButtons[0].selected === true ? 'Male':'Female')
+      data_signup.push(date)
+
+      navigation.navigate("LogIn")
 
 
+ })
+    .catch(error=>{alert(error.message)})
   }
   
   return (
   <ScrollView>
     <View style={styles.container}>
-      
         <Text style={styles.Text}>Sign Up to Enjoy It </Text>
         <TextInput placeholder='enter name' placeholderTextColor='black' style={styles.TextInput} onChangeText={name => setName(name)} />
-        <TextInput placeholder='enter Email' placeholderTextColor='black' style={styles.TextInput} value={email} onChangeText={setEmail} />
+        <TextInput placeholder='enter User Name' placeholderTextColor='black' style={styles.TextInput} value={userName} onChangeText={userName => setUserName(userName)} />
         <TextInput placeholder='enter Password' placeholderTextColor='black' secureTextEntry={true} style={styles.TextInput} onChangeText={pass => setPassword(pass)} />
         <TextInput placeholder='enter PhoneNumber' placeholderTextColor='black' style={styles.TextInput} onChangeText={phone => setPhoneNumber(phone)} />
-        
+        <TextInput placeholder='enter Address' placeholderTextColor='black' style={styles.TextInput} onChangeText={address => setAddress(address)} />
 
         <Text style={styles.RADIO}>Gender:</Text>
         <RadioGroup
@@ -119,7 +126,9 @@ const SignUp = ({ navigation }) => {
         onPress={AddUser}>
         <Text style={styles.btn}>Submit</Text>
       </TouchableOpacity>
+      
       </View>  
+     
       </ScrollView>
     
   )
@@ -180,6 +189,10 @@ const styles = StyleSheet.create({
   date: {
     shadowColor: 'black',
 
+  },
+  img: {
+    flex: 1, 
+    justifyContent: "center"
   }
 });
 export default SignUp;
