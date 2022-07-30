@@ -1,108 +1,48 @@
 
-import { StyleSheet, Text, View, Dimensions,TouchableOpacity,TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useState, useContext } from 'react';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import { useEffect } from 'react';
 import { auth } from './firebase';
+import { ContextForItems } from '../Components/Context';
 export const kk = [];
 const LogIn = ({ navigation }) => {
   const [passwordVisible, setPasswordVisible] = useState(true);
-  const [username, setusername] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState('');
+  const contextProp = useContext(ContextForItems);
+  // useEffect(()=>{
+  //   const moved = auth.onAuthStateChanged(user=>{
+  //     if (user){
+  //       navigation.navigate("Home")
+  //     }
+  //   })
 
-
-  const [info, setInfo] = useState("null");
-  const [info2, setInfo2] = useState(null);
-  const [loadingg, setLoadingg] = useState(false);
-  const [data, setData] = useState(null);
-  let items = [];
-
-  
-  const fun = () =>{
-       {
-           fetch("http://194.90.158.74/bgroup61/test2/tar5/api/Recommendation?userId=90", {
-              method: 'GET',
-              headers: new Headers({
-                  'Content-Type': 'application/json; charset=UTF-8',
-                  'Accept': 'application/json; charset=UTF-8'
-              })
-          }).then(res=> {
-              console.log('res status', res.status);
-              return res.json();
-          }).then(
-              (result) => { console.log(result);
-                   setData(result);
-                   setInfo(result);
-                   calltripeso(result);
-                  },
-              (error) => {return null;})
-          }
-          if (data != null) {
-              console.log('user places : ', data);
-         }
-      }
-
-
-  const calltripeso = (async (info) => {
-      console.log('print info part 2 :', info)
-      const t = Promise.all(info.map(item => getItem(item)))
-  })
-
-  const getItem = async (item) => {
-
-      fetch("https://www.triposo.com/api/20220104/poi.json?id=" + item + "&fields=all&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco", {
-          method: 'GET',
-          headers: new Headers({
-              'Content-Type': 'application/json; charset=UTF-8',
-              'Accept': 'application/json; charset=UTF-8'
-          })
-      }).then(res=> {
-          console.log('res status', res.status);
-          return res.json();
-      }).then((result) => {//setInfo2(info2 => [...info2, result.results]);
-          items.push(result.results)
-          setLoadingg(true)
-          console.log("get item from triposo func : ", items.length)
-      })
-      items !== null ? setLoadingg(true) : null;
-
-}
-
-  const handlelogin = ()=>{
-    auth
-    .signInWithEmailAndPassword(email,password)
-    .then(userCredentials =>{
-      const user = userCredentials.user;
-      kk.push(user.email)
-      navigation.navigate("Home")
-    })
-    .catch(error=>{alert(error.message);})
-  }
-  const submitFun = () => {
-    fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Users?pass=' + password + '&userName=' + email, {
+  //   return moved
+  // },[])
+  // const handlelogin = ()=>{
+  //   auth
+  //   .signInWithEmailAndPassword(email,password)
+  //   .then(userCredentials =>{
+  //     const user = userCredentials.user;
+  //     kk.push(user.email)
+  //     navigation.navigate("Home")
+  //   })
+  //   .catch(error=>{alert(error.message);})
+  // }
+  const submitFun = (async() => {
+    const response = await fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Users?password=' + password + '&userName=' + userName, {
       method: 'Get',
       headers: new Headers({
         'Content-Type': 'application/json; charset=UTF-8',
         'Accept': 'application/json; charset=UTF-8'
       })
     })
-      .then(res => {
-        console.log('res=', res);
-        console.log('res.status', res.status);
-        console.log('res.ok', res.ok);
-        res.ok === true ?
-          navigation.navigate('Home') :
-          alert("Authentication failed");
-        return res.json()
-      })
-      .then(
-        (error) => {
-          console.log("err post=", error);
-        }
-      );
-
-      fun();
-  }
+    const data = await response.json();
+    data !== null ? navigation.navigate('Home') : alert("Authentication Failed");
+    data!==null?contextProp.UpdateUser(data):null;
+    return data;
+  })
 
   return (
     <View style={styles.container}>
@@ -120,31 +60,30 @@ const LogIn = ({ navigation }) => {
               <Text style={styles.loginTitleText} >Welcome to Enjoy It</Text>
               <View style={styles.hr}></View>
               <View style={styles.inputBox}>
-                <Text style={styles.inputLabel} onChangeText={setusername}>Name</Text>
-                <TextInput value={username} onChangeText={setusername} style={styles.input} />
+                <Text style={styles.inputLabel}>Name</Text>
+                <TextInput value={userName} onChangeText={setUserName} style={styles.input} />
               </View>
               <View style={styles.inputBox}>
                 <Text style={styles.inputLabel}>Password</Text>
                 <TextInput
-                   secureTextEntry={passwordVisible}
-                   style={styles.input}
-                   onChangeText={setPassword}
-                   value={password}
-                
+                  secureTextEntry={passwordVisible}
+                  style={styles.input}
+                  onChangeText={setPassword}
+                  value={password}
+
                   label='password'
                 />
               </View>
-              <TouchableOpacity style={styles.loginButton} onPress={submitFun}>
-                <Text style={styles.loginButtonText}>Login</Text>
+              <TouchableOpacity style={styles.loginButton} >
+                <Text style={styles.loginButtonText} onPress={submitFun}>Login</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={()=>{navigation.navigate("SignUp")}}>
+              <TouchableOpacity onPress={() => { navigation.navigate("SignUp") }}>
                 <Text style={styles.registerText}>
                   Don't have an account?
                 </Text>
                 <Text style={styles.registerText}>Sign Up</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.loginButton} onPress={() => { navigation.navigate("Recommendation") }}>
-                <Text style={styles.loginButtonText}>Recommendation</Text>
+                <Text style={styles.registerText} onPress={() => { navigation.navigate("Recommendation") }} >Reco</Text>
+
               </TouchableOpacity>
             </View>
           </View>

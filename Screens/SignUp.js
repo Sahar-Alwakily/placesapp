@@ -89,9 +89,7 @@ const SignUp = ({ navigation }) => {
       data_signup.push(date)
 
       navigation.navigate("LogIn")
-
-
- })
+    })
     .catch(error=>{alert(error.message)})
   }
   
