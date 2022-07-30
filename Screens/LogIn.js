@@ -11,26 +11,9 @@ const LogIn = ({ navigation }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState('');
   const contextProp = useContext(ContextForItems);
-  // useEffect(()=>{
-  //   const moved = auth.onAuthStateChanged(user=>{
-  //     if (user){
-  //       navigation.navigate("Home")
-  //     }
-  //   })
 
-  //   return moved
-  // },[])
-  // const handlelogin = ()=>{
-  //   auth
-  //   .signInWithEmailAndPassword(email,password)
-  //   .then(userCredentials =>{
-  //     const user = userCredentials.user;
-  //     kk.push(user.email)
-  //     navigation.navigate("Home")
-  //   })
-  //   .catch(error=>{alert(error.message);})
-  // }
   const submitFun = (async() => {
+    navigation.navigate('Home')
     const response = await fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Users?password=' + password + '&userName=' + userName, {
       method: 'Get',
       headers: new Headers({
@@ -82,7 +65,7 @@ const LogIn = ({ navigation }) => {
                   Don't have an account?
                 </Text>
                 <Text style={styles.registerText}>Sign Up</Text>
-                <Text style={styles.registerText} onPress={() => { navigation.navigate("Recommendation") }} >Reco</Text>
+                <Text style={styles.registerText} onPress={() => { navigation.navigate("Popular") }} >popular</Text>
 
               </TouchableOpacity>
             </View>

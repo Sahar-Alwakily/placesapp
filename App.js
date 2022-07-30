@@ -11,7 +11,11 @@ import Recommendation from './Screens/Recommendation';
 import Track from './Screens/Track';
 import { React, useState, useEffect, useCallback } from 'react';
 import { stars } from './data/fav';
+//import EditProfileScreen from './Screens/EditProfileScreen';
 import { Card } from 'react-native-elements';
+import Context from './Components/Context';
+import PlaceInfo from './Screens/PlaceInfo ';
+import Popular from './Screens/Popular';
 import {
   Text, View, SafeAreaView, Dimensions, Image, Button
   , ScrollView, FlatList, StyleSheet, TouchableOpacity, RefreshControl
@@ -26,6 +30,8 @@ const Tab = createBottomTabNavigator();
 export const SLIDER_WIDTH = Dimensions.get('window').width + 30;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
 export const arr1 = [];
+export const category = [{ name: 'museums', selected: false, index: 0 }, { name: 'hotels', selected: false, index: 1 }, { name: 'zoos', selected: false, index: 2 }, { name: 'sightseeing', selected: false, index: 3 }, { name: 'shopping', selected: false, index: 4 }, { name: 'exploringnature', selected: false, index: 5 }];
+
 function TabBar() {
   return (
     <Tab.Navigator>
@@ -56,11 +62,11 @@ function TabBar() {
 
       />
 
-      <Tab.Screen name='Track' component={Track}
+      <Tab.Screen name='Track  ' component={Track}
         options={{
           tabBarLabel: 'Track',
           tabBarIcon: ({ size }) => (
-            <Icon name="star" color="black" size={size} />
+            <Icon name="map" color="black" size={size} />
           ),
         }}
 
@@ -77,9 +83,7 @@ function TabBar() {
     </Tab.Navigator>
   )
 }
-var ShowMore = ""
-var intro = ""
-var properties = ""
+
 const Favorite = () => {
   const [refreshing, setRefreshing] = useState(false);
 
@@ -89,70 +93,26 @@ const Favorite = () => {
       setRefreshing(false)
     }, 1000);
   }, []);
-  useEffect(()=>{
+  useEffect(() => {
     onRefresh()
-  },[])
+  }, [])
   console.log({ stars })
-  // const Item = ({ title }) => (
-  //   <View style={styles.item}>
-  //     <Text style={styles.title}>{title}</Text>
-  //   </View>
-  // );
-  // const renderItem = ({ item }) => (
-  //   <Item title={item} />
-  // );
-  return (
-    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-      {
-        stars.map((item, id) => {
-          return (
-            <View style={styles.item} key={item}>
-              {item == "Aquarium" ? <View><Image source={require("./Images/1.png")} style={{ alignSelf: "center", width: 200, height: 200, borderRadius: 300 }} /><Text style={styles.title}>{item}</Text></View> : null}
-              {item == "Kings City" ? <View><Image source={require("./Images/2.png")} style={{ width: 200, alignSelf: "center", height: 200, borderRadius: 300 }} /><Text style={styles.title}>{item}</Text></View> : null}
-              {item == "Eilat City Museum" ? <View><Image source={require("./Images/3.png")} style={{ width: 200, height: 200, alignSelf: "center", borderRadius: 300 }} /><Text style={styles.title}>{item}</Text></View> : null}
-              {item == "Taba Border Crossing" ? <View><Image source={require("./Images/4.png")} style={{ width: 200, height: 200, borderRadius: 300, alignSelf: "center" }} /><Text style={styles.title}>{item}</Text></View> : null}
-              {item == "Wadi Araba Crossing" ? <View><Image source={require("./Images/5.png")} style={{ width: 200, height: 200, alignSelf: "center", borderRadius: 300 }} /><Text style={styles.title}>{item}</Text></View> : null}
-            </View>
-          )
-        })
-      }
-    </ScrollView >
-  )
+  const Item = ({ title }) => (
+    <View style={styles.item}>
+      <Text style={styles.title}>{title}</Text>
+    </View>
+  );
+
 }
-  const Items = () => {
 
-    p1 = JSON.stringify(ShowMore.properties[0].name)
-    p11 = JSON.stringify(ShowMore.properties[0].value)
-
-    p2 = JSON.stringify(ShowMore.properties[0].name)
-    p22 = JSON.stringify(ShowMore.properties[1].value)
-
-    intro = JSON.stringify(ShowMore.intro)
-    ShowMore = JSON.stringify(ShowMore.name)
-
-    ShowMore = ShowMore.replace(/"/, "")
-    ShowMore = ShowMore.replace(/"/, "")
-
-  
-    return (
-      <View>
-        <View>
-          <Text style={{ fontSize: 30 }}>{ShowMore}</Text>
-          <Text style={styles.intro}>{intro}</Text>
-          <Text style={{ fontSize: 30 }}>Properties</Text>
-          <Text style={{ fontSize: 20 } }>{p1} : {p11}</Text>
-          <Text style={{ fontSize: 20 } } >{p2} : {p22}</Text>
-        </View>
-      </View>
-    )
-}
 const Home = ({ navigation }) => {
 
 
 
   let SelectAllLocation = [];
   const [isDone, setIsDone] = useState(false);
-
+  const [selectData2, setSelectData2] = useState([{ isSelected: false }]);
+  const [selectedCategory, setSelectedCategory] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [inxData, setinxData] = useState(0);
@@ -177,7 +137,7 @@ const Home = ({ navigation }) => {
     console.log(SelectAllLocation.length);
     //AllDataPlace.push(selectData);
     navigation.replace('ChooseLocation', { paramKey: SelectAllLocation, DataKey: selectData });
-    };
+  };
 
   function removeItemOnce(arr, value) {
     var index = arr.indexOf(value);
@@ -226,7 +186,7 @@ const Home = ({ navigation }) => {
         <Image source={{ uri: item.images.length > 0 ? item.images[0].sizes.medium.url : 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/450px-No_image_available.svg.png?20190827162820' }} style={{ width: 200, height: 200, borderRadius: 100 }} />
         <Text style={{ marginVertical: 10, fontSize: 20, fontWeight: 'bold' }}> {item.name}</Text>
         <Text style={{ color: 'green', marginVertical: 10, fontSize: 20, fontWeight: 'bold' }}>{(item.score).toFixed(2)}</Text>
-        <TouchableOpacity onPress={() => { navigation.navigate("ItemPage"); ShowMore = item }}>
+        <TouchableOpacity onPress={() => navigation.navigate('PlaceInfo', { item: item })}>
 
           <Text style={{ color: 'green', marginVertical: 10, fontSize: 20, fontWeight: 'bold' }}>show more</Text>
         </TouchableOpacity>
@@ -258,135 +218,184 @@ const Home = ({ navigation }) => {
       (error) => { return null; })
   }, [10]);
 
+
+  return (
+    loading === false ? <ScrollView>
+      <View >
+        <Text style={{ color: 'white', marginVertical: 20, fontSize: 20, fontWeight: 'bold', backgroundColor: 'green', marginTop: 32, textAlign: 'center', height: 50, padding: 8 }}>Places</Text>
+        <View>
+          <FlatList
+            data={category}
+            horizontal={true}
+            keyExtractor={item => item.index}
+            renderItem={({ item }) => (
+              <View style={{ marginLeft: 5 }}>
+                {console.log(item.index)}
+                <Text style={[styles.title2, { backgroundColor: item.selected === true ? 'green' : 'white' }]} onPress={() => { category[item.index].selected === true ? category[item.index].selected = false : category[item.index].selected = true; setSelectedCategory(item); }}>{`${item.name}`}</Text>
+                {console.log(item.selected)}
+              </View>
+            )} />
+        </View>
+        <View>
+          <Carousel
+            data={data}
+            renderItem={renderItem}
+            sliderWidth={SLIDER_WIDTH}
+            itemWidth={ITEM_WIDTH}
+          />
+        </View>
+      </View>
+
+      <Text style={{ marginVertical: 5, fontSize: 15, fontWeight: 'bold', textAlign: "center" }}> You Should Select 4 Locations ({arr1.length})  </Text>
+      <TouchableOpacity>
+        {isDone && <Button title="Done"
+          onPress={() => MapArrAllSelectLocations()}
+        ></Button>}
+      </TouchableOpacity>
+
+    </ScrollView> : <Image source={require('./Images/img.gif')} />
+
+  );
 };
 
 export default function App() {
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="LogIn" component={LogIn} options={{ headerShown: false }} ></Stack.Screen>
-        <Stack.Screen name="SignUp" component={SignUp} ></Stack.Screen>
-        <Stack.Screen name="Camera" component={Camera}></Stack.Screen>
-        <Stack.Screen name="Profile" component={TabBar}></Stack.Screen>
-        <Stack.Screen name="ChooseLocation" component={ChooseLocation}></Stack.Screen>
-        <Stack.Screen name="UpdateTrack" component={UpdateTrack}></Stack.Screen>
-        <Stack.Screen name="Track" component={Track}></Stack.Screen>
-        <Stack.Screen name="Recommendation" component={Recommendation}></Stack.Screen>
+    <Context>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="LogIn" component={LogIn} options={{ headerShown: false }} ></Stack.Screen>
+          <Stack.Screen name="SignUp" component={SignUp} ></Stack.Screen>
+          <Stack.Screen name="Camera" component={Camera}></Stack.Screen>
+          <Stack.Screen name="Profile" component={TabBar}></Stack.Screen>
+          <Stack.Screen name="ChooseLocation" component={ChooseLocation}></Stack.Screen>
+          <Stack.Screen name="UpdateTrack" component={UpdateTrack}></Stack.Screen>
+          <Stack.Screen name="Track" component={Track}></Stack.Screen>
+          <Stack.Screen name="PlaceInfo" component={PlaceInfo}></Stack.Screen>
+          <Stack.Screen name="Popular" component={Popular}></Stack.Screen>
 
+          <Stack.Screen name="Recommendation" component={Recommendation}></Stack.Screen>
+          <Stack.Screen name="Home" component={TabBar} options={{ headerShown: false }}></Stack.Screen>
+          <Stack.Screen name="Favorite" component={TabBar} ></Stack.Screen>
+          <Stack.Screen name="Notification" component={TabBar} />
+          {/* <Stack.Screen name="Track" component={TabBar} /> */}
 
-
-        <Stack.Screen name="Home" component={TabBar} options={{ headerShown: false }}></Stack.Screen>
-        <Stack.Screen name="Favorite" component={TabBar} />
-        <Stack.Screen name="Notification" component={TabBar} />
-        {/* <Stack.Screen name="Track" component={TabBar} /> */}
-        <Stack.Screen name="ItemPage" component={Items} />
-
-      </Stack.Navigator>
-    </NavigationContainer>
-
-  );
+        </Stack.Navigator>
+      </NavigationContainer>
+     </Context>
+      );
 
 
 }
 
 
-const styles = StyleSheet.create({
-  containerFlex: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+      const styles = StyleSheet.create({
+        containerFlex: {
+        flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
   },
-  isVisible: {
-    width: 30, height: 30,
-    padding: 10,
+      isVisible: {
+        width: 30, height: 30,
+      padding: 10,
 
   },
-  disabled: {
-    padding: 10,
-    display: 'none'
+      disabled: {
+        padding: 10,
+      display: 'none'
   },
-  header: {
-    height: 15,
-    width: '100%',
-    backgroundColor: 'pink'
-  },
-  intro: {
-    fontSize: 17,
-  },
-  row: {
-    flexDirection: 'row'
-  },
-  label: {
-    fontSize: 16,
-    color: 'black',
-    marginRight: 10,
-    fontWeight: 'bold'
-  },
-  item: {
-    backgroundColor: 'white',
-    padding: 20,
-    marginVertical: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 16,
-  },
-  info: {
-    fontSize: 16,
-    color: 'grey'
-  },
-  bottomCard: {
-    width: '100%',
-    padding: 30,
-    borderTopEndRadius: 10,
-    borderTopStartRadius: 10,
-    marginTop: 40
-  },
-  inpuStyle: {
-    backgroundColor: 'green',
-    borderRadius: 4,
-    borderWidth: 1,
-    alignItems: 'center',
-    height: 48,
-    justifyContent: 'center',
-    marginTop: 20
-  },
-  container: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    marginTop: 60,
+      title2:{
+        fontSize:18,
+      width:150,
+      padding:8,
+      borderWidth:1,
+      borderColor:'green',
+      borderRadius:25,
+      textAlign:'center'
+  
 
   },
-  textStyle: { fontSize: 15, color: '#fff' },
-  buttinContainer: {
-    width: 45,
-    height: 45,
-    borderRadius: 21,
-    right: -320,
+      header: {
+        height: 15,
+      width: '100%',
+      backgroundColor: 'pink'
+  },
+      intro: {
+        fontSize: 17,
+  },
+      row: {
+        flexDirection: 'row'
+  },
+      label: {
+        fontSize: 16,
+      color: 'black',
+      marginRight: 10,
+      fontWeight: 'bold'
+  },
+      item: {
+        backgroundColor: 'white',
+      padding: 20,
+      marginVertical: 8,
+      alignItems: "center",
+      justifyContent: "center",
+      marginHorizontal: 16,
+  },
+      info: {
+        fontSize: 16,
+      color: 'grey'
+  },
+      bottomCard: {
+        width: '100%',
+      padding: 30,
+      borderTopEndRadius: 10,
+      borderTopStartRadius: 10,
+      marginTop: 40
+  },
+      inpuStyle: {
+        backgroundColor: 'green',
+      borderRadius: 4,
+      borderWidth: 1,
+      alignItems: 'center',
+      height: 48,
+      justifyContent: 'center',
+      marginTop: 20
+  },
+      container: {
+        paddingVertical: 10,
+      paddingHorizontal: 10,
+      marginTop: 60,
 
-    padding: 10,
-    backgroundColor: 'green',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 70,
-    shadowOffset: {
-      width: 0,
+  },
+      textStyle: {fontSize: 15, color: '#fff' },
+      buttinContainer: {
+        width: 45,
+      height: 45,
+      borderRadius: 21,
+      right: -320,
+
+      padding: 10,
+      backgroundColor: 'green',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 70,
+      shadowOffset: {
+        width: 0,
       height: 2,
     },
-    shadowOpacity: .8,
-    shadowRadius: 5,
-    elevation: 5,
+      shadowOpacity: .8,
+      shadowRadius: 5,
+      elevation: 5,
   },
-  title: {
-    fontSize: 32,
-    textAlign: "center",
-    color: "green",
+      title: {
+        fontSize: 32,
+      textAlign: "center",
+      color: "green",
   },
-  plus: {
-    fontSize: 40,
-    color: '#fff',
-    position: 'absolute',
-    top: -6,
-    left: 9,
+      plus: {
+        fontSize: 40,
+      color: '#fff',
+      position: 'absolute',
+      top: -6,
+      left: 9,
   }
 });

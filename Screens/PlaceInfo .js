@@ -12,6 +12,21 @@ const PlaceInfo = ({ route, navigation }) => {
  `;
     console.log(item);
 
+    const addProperties = (item)=>{
+      if(item.properties[0].key === "phone") return item.properties[0].value;
+      else if(item.properties[0].key === "website") return item.properties[0].value;
+      else if(item.properties[0].key === "hours") return item.properties[0].value;
+      else if(item.properties[1].key === "phone") return item.properties[1].value;
+      else if(item.properties[1].key === "website") return item.properties[1].value;
+      else if(item.properties[1].key === "hours") return item.properties[1].value;
+      else if(item.properties[2].key === "phone") return item.properties[2].value;
+      else if(item.properties[2].key === "website") return item.properties[2].value;
+      else if(item.properties[2].key === "hours") return item.properties[2].value;
+
+    return null;
+    }
+
+    
     return (
         <ScrollView>
             <View>
@@ -21,10 +36,10 @@ const PlaceInfo = ({ route, navigation }) => {
                 <View style={styles.buttomContainer}>
                    
                     <Text style={{color:'green',fontSize:20,padding:6}}>Description:</Text><Text style={{padding:6,margin:3,fontSize:15}}>{item.intro}</Text>
-                    <Text style={{fontSize:20,padding:5,margin:5}}><Icon name="phone" size={22} color="green" > </Icon>{item.properties[0].value}</Text>
-                    <Text style={{padding:5,margin:5,fontSize:18}}><Icon name="link" size={25} color="green" > </Icon> {item.properties[1].value}</Text>
-                    <Text style={{fontSize:20,padding:5,margin:5}}><Ionicons name="time" size={25} color="green" > </Ionicons>{item.properties[2].value}</Text>
-                    <Text style={{fontSize:20,padding:5,margin:5}}><Icon name="payment"  size={20} color="green" > </Icon>{item.booking_info.price.amount}</Text>
+                    <Text style={{fontSize:20,padding:5,margin:5}}><Icon name="phone" size={22} color="green" > </Icon>{addProperties(item,key)}</Text>
+                    <Text style={{padding:5,margin:5,fontSize:18}}><Icon name="link" size={25} color="green" > </Icon> {addProperties(item,key)}</Text>
+                    <Text style={{fontSize:20,padding:5,margin:5}}><Ionicons name="time" size={25} color="green" > </Ionicons>{addProperties(item,key)}</Text>
+
                     
                     <View style={{ width: '100%', height: 200, marginVertical: 8, justifyContent: 'center', alignItems: 'center', backgroundColor: 'green', borderRadius: 4 }}>
                         <Image style={{ width: '100%', height: '100%' ,marginLeft:120}} source={{ uri: imagePreviewUrl }}></Image>
