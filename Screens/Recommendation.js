@@ -7,6 +7,7 @@ export const SLIDER_WIDTH = Dimensions.get('window').width + 30;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
 
 const Recommendation = ({ navigation }) => {
+    console.log("You calling Recommendation")
     const [info, setInfo] = useState("null");
     const [info2, setInfo2] = useState([]);
     const [loadingg, setLoadingg] = useState(false);

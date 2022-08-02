@@ -2,7 +2,6 @@ import { React, useState, useEffect, useContext } from 'react';
 import { Text, View, SafeAreaView, Dimensions, Image, Button, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import Carousel from 'react-native-snap-carousel';
-import { ContextForItems } from '../Components/Context';
 
 export const SLIDER_WIDTH = Dimensions.get('window').width + 30;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
@@ -10,10 +9,12 @@ export const arr1 = [];
 
 export default function Popular({ route, navigation }) {
     const [data, setData] = useState(null);
-    const contextProp = useContext(ContextForItems);
+    const [loadingg, setLoadingg] = useState(false);
+    var  data2 = [] ;
 
-    useEffect(() => {
-        fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Recommendation?userId=' + contextProp.user.id, {
+
+    const funPopular = ()=> {
+         fetch('http://194.90.158.74/bgroup61/test2/tar5/api/Recommendation', {
             method: 'GET',
             headers: new Headers({
                 'Content-Type': 'application/json; charset=UTF-8',
@@ -26,15 +27,30 @@ export default function Popular({ route, navigation }) {
                 return res.json();
             })
             .then(
-                (result) => { result.map((item)=>{getfromtriposo(item)}) },
+                (result) => AddData2(result),
                 (error) => {
                     return null;
                 }
             )
-    }, []);
+
+    }
+
+    const  AddData2 = (res)=> { 
+        res.map((item)=>{
+        data2.push(item.Link.Place1);
+        data2.push(item.Link.Place2)})
+        //console.log('DATA uniq ========', data2 + "data SIZE =========" + data2.length); 
+
+        if(data2){
+            console.log('DATA uniq ========', data2 + "uniq SIZE =========" + data2.length); 
+            var uniq = [ ...new Set(data2) ];
+            console.log('DATA uniq ========', uniq + "uniq SIZE =========" + uniq.length); 
+            console.log('GETFROMTRIPOSO 2222222222222'+uniq.map((d)=>{getfromtriposo(d)}));
+        }
+    }
 
     const getfromtriposo = (item) => {
-        fetch("https://www.triposo.com/api/20220104/poi.json?location_id="+item.placeId+"&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco", {
+        fetch("https://www.triposo.com/api/20220104/poi.json?location_id="+item+"&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco", {
             method: 'GET',
             headers: new Headers({
                 'Content-Type': 'application/json; charset=UTF-8',
@@ -44,10 +60,13 @@ export default function Popular({ route, navigation }) {
             .then(res => {
                 console.log('res status', res.status);
                 console.log('res ok', res.ok);
+                console.log('00000000000000000', res.json()); 
                 return res.json();
             })
             .then(
-                (result) => { setData(...data,result);  },
+                (result) => { setData(...data,result); setLoadingg(true)                
+
+            },
                 (error) => {
                     return null;
                 }
@@ -84,9 +103,9 @@ export default function Popular({ route, navigation }) {
     }
 
     return (
-        <ScrollView>
+        loadingg === true ? <ScrollView>
             <View >
-                <Text style={{ color: 'white', marginVertical: 20, fontSize: 20, fontWeight: 'bold', backgroundColor: 'green', marginTop: 25, textAlign: 'center', height: 50 }}>Recommended for you</Text>
+                <Text style={{ color: 'white', marginVertical: 20, fontSize: 20, fontWeight: 'bold', backgroundColor: 'green', marginTop: 25, textAlign: 'center', height: 50 }}>Popular for you</Text>
                 <SafeAreaView>
                     <Carousel
                         data={data}
@@ -97,8 +116,7 @@ export default function Popular({ route, navigation }) {
                 </SafeAreaView>
             </View>
 
-        </ScrollView>
-
+            </ScrollView> : <View><TouchableOpacity onPress={()=>funPopular()}><Text>press</Text></TouchableOpacity></View>
     );
 }
 

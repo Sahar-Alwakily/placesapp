@@ -4,7 +4,7 @@ import { Text, View,SafeAreaView, Dimensions, Image,Button
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import Carousel from 'react-native-snap-carousel';
 //const axios = require('axios').default;
-
+import Recommendation from './Recommendation.JS';
 export const SLIDER_WIDTH = Dimensions.get('window').width + 30;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
 export const arr1 = [];
@@ -32,6 +32,35 @@ const Home = ({ navigation }) => {
     setSelectData(arr);
   };
 
+  const ShowRec = ()=>{
+    return (
+       <View>
+      <View >
+        <Text style={{ color: 'white' ,marginVertical: 20, fontSize: 20, fontWeight: 'bold',backgroundColor:'green',marginTop:25,textAlign:'center',height:50}}>Places</Text>
+        <SafeAreaView>
+        <Carousel
+          data={data}
+          renderItem={renderItem}
+          sliderWidth={SLIDER_WIDTH}
+          itemWidth={ITEM_WIDTH}
+        />   
+        </SafeAreaView>
+      </View>
+
+      <Text style={{ marginVertical: 5, fontSize: 15, fontWeight: 'bold',color:"gray" }}> You Can Select 4 Locations ({arr1.length})  </Text>
+      <TouchableOpacity>
+        {isDone && <Button title="Done"
+        onPress={() => MapArrAllSelectLocations()}
+        ></Button>}
+        </TouchableOpacity>
+        <View>
+        <Text> Recommendation by :  </Text>
+        </View>
+        <Text> Recommendation by :  </Text>
+
+    </View>
+    )
+  }
   const MapArrAllSelectLocations = () =>{
     for (let i=0; i<arr1.length; i++){
       SelectAllLocation[i] = selectData[arr1[i]];
@@ -116,26 +145,7 @@ const Home = ({ navigation }) => {
 
 
   return (
-    loading === false ? <ScrollView>
-      <View >
-        <Text style={{ color: 'white' ,marginVertical: 20, fontSize: 20, fontWeight: 'bold',backgroundColor:'green',marginTop:25,textAlign:'center',height:50}}>Places</Text>
-        <SafeAreaView>
-        <Carousel
-          data={data}
-          renderItem={renderItem}
-          sliderWidth={SLIDER_WIDTH}
-          itemWidth={ITEM_WIDTH}
-        />   
-        </SafeAreaView>
-      </View>
-
-      <Text style={{ marginVertical: 5, fontSize: 15, fontWeight: 'bold',color:"gray" }}> You Can Select 4 Locations ({arr1.length})  </Text>
-      <TouchableOpacity>
-        {isDone && <Button title="Done"
-        onPress={() => MapArrAllSelectLocations()}
-        ></Button>}
-        </TouchableOpacity>
-    </ScrollView> : <Image source={require('../Images/img.gif')}/>
+    loading === false ? ShowRec() : <Image source={require('../Images/img.gif')}/>
 
   );
 };

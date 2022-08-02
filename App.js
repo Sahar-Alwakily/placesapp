@@ -9,7 +9,7 @@ import ChooseLocation from './Screens/ChooseLocation';
 import Camera from './Screens/Camera';
 import Recommendation from './Screens/Recommendation';
 import Track from './Screens/Track';
-import { React, useState, useEffect, useCallback } from 'react';
+import { React, useState, useEffect, useCallback, Component } from 'react';
 import { stars } from './data/fav';
 //import EditProfileScreen from './Screens/EditProfileScreen';
 import { Card } from 'react-native-elements';
@@ -26,11 +26,17 @@ import UpdateTrack from './Screens/UpdateTrack';
 const Stack = createNativeStackNavigator();
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+
+
+
+
+
 const Tab = createBottomTabNavigator();
 export const SLIDER_WIDTH = Dimensions.get('window').width + 30;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
 export const arr1 = [];
 export const category = [{ name: 'museums', selected: false, index: 0 }, { name: 'hotels', selected: false, index: 1 }, { name: 'zoos', selected: false, index: 2 }, { name: 'sightseeing', selected: false, index: 3 }, { name: 'shopping', selected: false, index: 4 }, { name: 'exploringnature', selected: false, index: 5 }];
+
 
 function TabBar() {
   return (
@@ -84,6 +90,7 @@ function TabBar() {
   )
 }
 
+
 const Favorite = () => {
   const [refreshing, setRefreshing] = useState(false);
 
@@ -107,8 +114,13 @@ const Favorite = () => {
 
 const Home = ({ navigation }) => {
 
-
-
+//RECO
+  const [info, setInfo] = useState("null");
+  const [info2, setInfo2] = useState([]);
+  const [loadingg, setLoadingg] = useState(false);
+  const [dataRECO, setDataRECO] = useState(null);
+  var items =[];
+//RECO
   let SelectAllLocation = [];
   const [isDone, setIsDone] = useState(false);
   const [selectData2, setSelectData2] = useState([{ isSelected: false }]);
@@ -138,6 +150,66 @@ const Home = ({ navigation }) => {
     //AllDataPlace.push(selectData);
     navigation.replace('ChooseLocation', { paramKey: SelectAllLocation, DataKey: selectData });
   };
+//Recommendation
+  const fun = () =>{
+    {
+        fetch("http://194.90.158.74/bgroup61/test2/tar5/api/Recommendation?userId=90", {
+           method: 'GET',
+           headers: new Headers({
+               'Content-Type': 'application/json; charset=UTF-8',
+               'Accept': 'application/json; charset=UTF-8'
+           })
+       }).then(res=> {
+           console.log('res status', res.status);
+           return res.json();
+       }).then(
+           (result) => { console.log(result);
+                setDataRECO(result);
+                setInfo(result);
+                calltripeso(result);
+               },
+           (error) => {return null;})
+       }
+       if (dataRECO != null) {
+           console.log('////////////////////user places : ', dataRECO);
+      }
+   }
+
+
+const calltripeso = (async (info) => {
+   console.log('///////////////////////////print info part 2 :', info)
+   const t = Promise.all(info.map(item => getItem(item)))
+   t !== null ? setLoadingg(true) : null;
+})
+
+const getItem = async (item) => {
+
+   await fetch("https://www.triposo.com/api/20220104/poi.json?id=" + item + "&fields=all&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco", {
+       method: 'GET',
+       headers: new Headers({
+           'Content-Type': 'application/json; charset=UTF-8',
+           'Accept': 'application/json; charset=UTF-8'
+       })
+   }).then(res=> {
+       console.log('res status', res.status);
+       return res.json();
+   }).then((result) => {
+       var obbj = Object.assign({},result)
+       var obbj1 = Object.assign({},obbj)
+       var obbj2 = Object.assign({},obbj1.results)
+       var obbj3 = Object.assign({},obbj2[0])
+       items.push(JSON.stringify(obbj3))
+   })
+   if(items.length > 0) {
+       setInfo2(items)
+   }
+}
+
+//RECOMMENDAION
+
+
+
+
 
   function removeItemOnce(arr, value) {
     var index = arr.indexOf(value);
@@ -169,6 +241,43 @@ const Home = ({ navigation }) => {
     console.log(arr1 + " length : " + arr1.length);
   }
 
+// RECOMMENDAION
+const renderItemRECOMMENDED = ({ item, index }) => {
+
+  var obbj = Object.assign({},info2[1])
+  var obbj1 = Object.assign({},item)
+  var obbj2 = Object.assign({},obbj1.results)
+  var obbj3 = Object.assign({},obbj2[0])
+  var obj = JSON.parse(item);
+
+  console.log("THE ITEMS ARE:  ",obj.name)
+  return (
+      <View
+          style={{
+              borderWidth: 1,
+              padding: 20,
+              borderRadius: 20,
+              borderColor: 'green',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              width: 250,
+              marginTop: 20
+          }}>
+          <Image source={{ uri: obj.images.length > 0 ? obj.images[0].sizes.medium.url : 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/450px-No_image_available.svg.png?20190827162820'}} style={{ width: 200, height: 200 }} />
+          { <Text style={{ marginVertical: 10, fontSize: 20, fontWeight: 'bold' }}> {obj.name}</Text> }
+          {<Text style={{ color: 'green', marginVertical: 10, fontSize: 20, fontWeight: 'bold' }}>{obj.score}</Text>}
+          { <Text style={{ color: 'green', marginVertical: 10, fontSize: 20, fontWeight: 'bold' }} onPress={() => navigation.navigate('ItemPage', { obbj3: obbj3 })}>show more</Text> }
+          <Icon name='star'></Icon>
+      </View>
+  );
+}
+
+
+
+
+
+// RECOMMENDAION
+
   const renderItem = ({ item, index }) => {
     return (
       <View
@@ -194,7 +303,7 @@ const Home = ({ navigation }) => {
           <Icon name='star'></Icon>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Button style={styles.buttinContainer} title={selectData[index].isSelected ? "Delete" : "Add"}
+          <Button style={styles.buttinContainer} title={"Add"}
             onPress={() => addPlsaces(index)}>
           </Button>
         </TouchableOpacity>
@@ -203,6 +312,7 @@ const Home = ({ navigation }) => {
   }
 
   useEffect(async () => {
+    fun();
     await fetch("https://www.triposo.com/api/20220104/poi.json?location_id=Eilat&fields=all&count=10&account=8T0XUHMG&token=yyu117n9kp0vnas7s5ogaotfyu6dqqco", {
       method: "GET",
       headers: new Headers({
@@ -220,7 +330,7 @@ const Home = ({ navigation }) => {
 
 
   return (
-    loading === false ? <ScrollView>
+    loading === false || loadingg === true? <ScrollView>
       <View >
         <Text style={{ color: 'white', marginVertical: 20, fontSize: 20, fontWeight: 'bold', backgroundColor: 'green', marginTop: 32, textAlign: 'center', height: 50, padding: 8 }}>Places</Text>
         <View>
@@ -252,6 +362,22 @@ const Home = ({ navigation }) => {
           onPress={() => MapArrAllSelectLocations()}
         ></Button>}
       </TouchableOpacity>
+
+      <ScrollView>
+            <View >
+                <Text style={{ color: 'white', marginVertical: 20, fontSize: 20, fontWeight: 'bold', backgroundColor: 'green', marginTop: 25, textAlign: 'center', height: 50 }}>Recommended For You</Text>
+                <SafeAreaView>
+                    <Carousel
+                        data={info2}//item
+                        renderItem={renderItemRECOMMENDED}
+                        sliderWidth={SLIDER_WIDTH}
+                        itemWidth={ITEM_WIDTH}
+                    />
+                </SafeAreaView>
+            </View>
+      </ScrollView> 
+
+
 
     </ScrollView> : <Image source={require('./Images/img.gif')} />
 
